@@ -63,18 +63,9 @@ namespace ContentCompiler
         static void DecompilePortraits(string root)
         {
             using (var content = SetupContentManager(root))
-            {
-                var portraits = Directory.EnumerateFiles(root + "\\Portraits").Where(c => Path.GetExtension(c) == ".xnb").Select(c => Path.GetFileNameWithoutExtension(c));
-                foreach (var portrait in portraits)
-                {
-                    var texture = content.Load<Texture2D>("Portraits\\" + portrait);
-
-                    using (var stream = File.Create(root + "\\Portraits\\" + portrait + ".png"))
-                    {
-                        texture.SaveAsPng(stream, texture.Width, texture.Height);
-                    }
-                }
-            }
+                foreach (var asset in GetGameAssetsIn<Texture2D>(content, "portraits"))
+                    using (var stream = File.Create(root + "\\Portraits\\" + asset.Filename + ".png"))
+                        asset.Content.SaveAsPng(stream, asset.Content.Width, asset.Content.Height);
         }
     }
     class Game1 : Microsoft.Xna.Framework.Game
