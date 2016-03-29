@@ -69,6 +69,23 @@ namespace ContentCompiler
                         Console.Error.WriteLine($"Could not understand quest type {quest.Type} of quest {quest.Name} with ID {pair.Key}");
                         break;
                 }
+                foreach(var followUpQuest in pieces[5].Split(' '))
+                {
+                    if (followUpQuest == "-1")
+                        continue;
+                    (quest.FollowUpQuests = quest.FollowUpQuests ?? new List<int>()).Add(int.Parse(followUpQuest));
+                }
+
+                quest.MoneyReward = Convert.ToInt32(pieces[6]);
+                if (quest.MoneyReward == -1)
+                {
+                    quest.MoneyReward = null;
+                    quest.RewardDescription = pieces[7];
+                }
+                if (pieces.Count() > 8)
+                {
+                    quest.CanBeCancelled = pieces[8] == "true";
+                }
                 questMap.Add(pair.Key, quest);
             }
             return questMap;
@@ -89,5 +106,9 @@ namespace ContentCompiler
         public string NPCName { get; set; }
         public int? TileX { get; set; }
         public int? TileY { get; set; }
+        public List<int> FollowUpQuests { get; set; }
+        public int? MoneyReward { get; set; }
+        public string RewardDescription { get; set; }
+        public bool? CanBeCancelled { get; set; }
     }
 }
