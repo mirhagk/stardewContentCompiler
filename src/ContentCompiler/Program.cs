@@ -11,9 +11,17 @@ namespace ContentCompiler
 {
     class Program
     {
-        static void Main(string[] args)
+        class Arguments
         {
-            Decompile();
+            public bool Decompile { get; set; }
+            [PowerCommandParser.Position(0)]
+            public string ContentRoot { get; set; } = @"C:\Program Files(x86)\steam\steamapps\common\Stardew Valley\Content";
+        }
+        static void Main(string[] rawArgs)
+        {
+            var args = PowerCommandParser.Parser.ParseArguments<Arguments>(rawArgs);
+            if (args.Decompile)
+                Decompile(args.ContentRoot);
         }
         static ContentManager SetupContentManager(string root)
         {
@@ -24,12 +32,11 @@ namespace ContentCompiler
             serviceContainer.AddService<Microsoft.Xna.Framework.Graphics.IGraphicsDeviceService>(graphicsDevice);
             return content;
         }
-        static void Decompile()
+        static void Decompile(string root)
         {
-            var root = @"F:\steam\steamapps\common\Stardew Valley\Content";
             var content = SetupContentManager(root);
 
-            var characters = Directory.EnumerateFiles(root + "\\characters\\schedules").Where(c=>Path.GetExtension(c)==".xnb").Select(c=>Path.GetFileNameWithoutExtension(c));
+            var characters = Directory.EnumerateFiles(root + "\\characters\\schedules").Where(c => Path.GetExtension(c) == ".xnb").Select(c => Path.GetFileNameWithoutExtension(c));
             foreach (var character in characters)
             {
                 var scheduleRaw = content.Load<Dictionary<string, string>>("characters\\schedules\\" + character);
