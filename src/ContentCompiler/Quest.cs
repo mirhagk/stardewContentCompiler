@@ -28,7 +28,27 @@ namespace ContentCompiler
                         quest.ItemIDToCraft = int.Parse(typeSpecificInfo[0]);
                         quest.ItemIsBigItem = typeSpecificInfo[1] == "true";
                         break;
+                    case "Location":
+                        quest.TargetLocation = typeSpecificInfo[0];
+                        break;
+                    case "Building":
+                        quest.CompletionText = typeSpecificInfo[0];
+                        break;
+                    case "Basic":
+                        break;
+                    case "Social":
+                        break;
+                    case "ItemDelivery":
+                        quest.ItemDeliveryTarget = typeSpecificInfo[0];
+                        quest.ItemIDToDeliver = int.Parse(typeSpecificInfo[1]);
+                        quest.TargetMessage =  pieces[9];
+                        if (typeSpecificInfo.Count() > 2)
+                        {
+                            quest.NumberOfItemsToDeliver = int.Parse(typeSpecificInfo[2]);
+                        }
+                        break;
                     default:
+                        Console.Error.WriteLine($"Could not understand quest type {quest.Type} of quest {quest.Name} with ID {quest.ItemIDToCraft}");
                         break;
                 }
                 questMap.Add(pair.Key, quest);
@@ -41,5 +61,11 @@ namespace ContentCompiler
         public string Objective { get; set; }
         public int ItemIDToCraft { get; set; }
         public bool ItemIsBigItem { get; set; }
+        public string TargetLocation { get; set; }
+        public string CompletionText { get; set; }
+        public string ItemDeliveryTarget { get; set; }
+        public int ItemIDToDeliver { get; set; }
+        public string TargetMessage { get; set; }
+        public int NumberOfItemsToDeliver { get; set; }
     }
 }
