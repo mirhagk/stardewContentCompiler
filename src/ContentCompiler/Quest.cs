@@ -59,13 +59,13 @@ namespace ContentCompiler
         public string Name { get; set; }
         public string Description { get; set; }
         public string Objective { get; set; }
-        public int ItemIDToCraft { get; set; }
-        public bool ItemIsBigItem { get; set; }
+        public int? ItemIDToCraft { get; set; }
+        public bool? ItemIsBigItem { get; set; }
         public string TargetLocation { get; set; }
         public string CompletionText { get; set; }
         public string ItemDeliveryTarget { get; set; }
-        public int ItemIDToDeliver { get; set; }
+        public int? ItemIDToDeliver { get; set; }
         public string TargetMessage { get; set; }
-        public int NumberOfItemsToDeliver { get; set; }
+        public int? NumberOfItemsToDeliver { get; set; }
     }
 }
