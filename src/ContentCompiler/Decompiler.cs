@@ -27,6 +27,7 @@ namespace ContentCompiler
             DecompileTV();
             DecompileFestivals();
             DecompileEvents();
+            DecompileQuests();
             DecompilePortraits();
             DecompileMonsters();
             DecompileFarmer();
@@ -43,18 +44,11 @@ namespace ContentCompiler
         void DecompileSchedules()
         {
             foreach (var asset in GetGameAssetsIn<Dictionary<string, string>>("characters\\schedules"))
-            {
-                var schedule = Schedule.Decompile(asset);
-
-                OutputToFile("characters\\schedules", asset.Filename, schedule);
-            }
+                OutputToFile("characters\\schedules", asset.Filename, Schedule.Decompile(asset));
         }
-        void DecompileQuests()
-        {
-            var quests = Content.Load<Dictionary<int, string>>("Data\\Quests");
+        void DecompileQuests() =>
+            OutputToFile("Data", "Quests", Content.Load<Dictionary<int, string>>("Data\\Quests"));
 
-            OutputToFile("Data", "Quests", quests);
-        }
         void DecompileDialogue() => DecompileToJson("characters\\dialogue");
         void DecompileTV() => DecompileToJson("data\\tv");
         void DecompileFestivals() => DecompileToJson("data\\Festivals");
