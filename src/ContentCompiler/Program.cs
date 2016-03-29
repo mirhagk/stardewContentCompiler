@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework.Content;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -32,6 +33,8 @@ namespace ContentCompiler
             foreach (var character in characters)
             {
                 var schedule = content.Load<Dictionary<string, string>>("characters\\schedules\\" + character);
+                var json = JsonConvert.SerializeObject(schedule, Formatting.Indented);
+                File.WriteAllText(Path.Combine(root, "characters\\schedules", character) + ".json", json);
                 foreach(var keyPair in schedule)
                 {
                     Console.WriteLine(keyPair.Key);
