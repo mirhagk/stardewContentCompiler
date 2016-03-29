@@ -75,7 +75,7 @@ namespace ContentCompiler
                     Console.WriteLine(keyPair.Key);
                     Console.WriteLine(keyPair.Value);
                 }
-                File.WriteAllText(Path.Combine(root, "characters\\schedules", character) + ".src.json", JsonConvert.SerializeObject(schedule, Formatting.Indented));
+                File.WriteAllText(Path.Combine(root, "characters\\schedules", character) + ".json", JsonConvert.SerializeObject(schedule, Formatting.Indented));
             }
 
             //content.Load<Dictionary<string,string>>("characters\\schedules\\leah").Dump();
