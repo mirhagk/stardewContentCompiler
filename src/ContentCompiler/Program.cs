@@ -41,16 +41,17 @@ namespace ContentCompiler
 
         static void Decompile(string root)
         {
-            var content = SetupContentManager(root);
-
-            var characters = Directory.EnumerateFiles(root + "\\characters\\schedules").Where(c => Path.GetExtension(c) == ".xnb").Select(c => Path.GetFileNameWithoutExtension(c));
-            foreach (var character in characters)
+            using (var content = SetupContentManager(root))
             {
-                var scheduleRaw = content.Load<Dictionary<string, string>>("characters\\schedules\\" + character);
+                var characters = Directory.EnumerateFiles(root + "\\characters\\schedules").Where(c => Path.GetExtension(c) == ".xnb").Select(c => Path.GetFileNameWithoutExtension(c));
+                foreach (var character in characters)
+                {
+                    var scheduleRaw = content.Load<Dictionary<string, string>>("characters\\schedules\\" + character);
 
-                var schedule = Schedule.Decompile(scheduleRaw, character);
+                    var schedule = Schedule.Decompile(scheduleRaw, character);
 
-                File.WriteAllText(Path.Combine(root, "characters\\schedules", character) + ".json", JsonConvert.SerializeObject(schedule, Formatting.Indented));
+                    File.WriteAllText(Path.Combine(root, "characters\\schedules", character) + ".json", JsonConvert.SerializeObject(schedule, Formatting.Indented));
+                }
             }
         }
 
