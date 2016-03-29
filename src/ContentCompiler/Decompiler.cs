@@ -25,6 +25,8 @@ namespace ContentCompiler
             DecompileSchedules();
             DecompilePortraits();
             DecompileMonsters();
+            DecompileFarmer();
+            DecompileAnimals();
         }
         void DecompileSchedules()
         {
@@ -37,6 +39,8 @@ namespace ContentCompiler
         }
         void DecompilePortraits() => DecompileTextureFolder("portraits");
         void DecompileMonsters() => DecompileTextureFolder("characters\\monsters");
+        void DecompileFarmer() => DecompileTextureFolder("characters\\farmer");
+        void DecompileAnimals() => DecompileTextureFolder("animals");
 
         void DecompileTextureFolder(string relativePath)
         {
