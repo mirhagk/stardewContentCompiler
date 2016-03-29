@@ -25,7 +25,7 @@ namespace ContentCompiler
                 switch (quest.Type)
                 {
                     case "Crafting":
-                        quest.ItemIDToCraft = int.Parse(typeSpecificInfo[0]);
+                        quest.ItemID = int.Parse(typeSpecificInfo[0]);
                         quest.ItemIsBigItem = typeSpecificInfo[1] == "true";
                         break;
                     case "Location":
@@ -40,15 +40,33 @@ namespace ContentCompiler
                         break;
                     case "ItemDelivery":
                         quest.ItemDeliveryTarget = typeSpecificInfo[0];
-                        quest.ItemIDToDeliver = int.Parse(typeSpecificInfo[1]);
+                        quest.ItemID = int.Parse(typeSpecificInfo[1]);
                         quest.TargetMessage =  pieces[9];
                         if (typeSpecificInfo.Count() > 2)
-                        {
-                            quest.NumberOfItemsToDeliver = int.Parse(typeSpecificInfo[2]);
-                        }
+                            quest.NumberOfItems = int.Parse(typeSpecificInfo[2]);
+                        break;
+
+                    case "Monster":
+                        quest.MonsterNameToKill = typeSpecificInfo[0].Replace('_', ' ');
+                        quest.MonsterNumberToKill = int.Parse(typeSpecificInfo[1]);
+                        if (typeSpecificInfo.Count() > 2)
+                            quest.TargetLocation = typeSpecificInfo[2];
+                        else
+                            quest.TargetLocation = "null";
+                        break;
+                    case "ItemHarvest":
+                        quest.ItemID = int.Parse(typeSpecificInfo[0]);
+                        quest.NumberOfItems = typeSpecificInfo.Length > 1 ? int.Parse(typeSpecificInfo[1]) : 1;
+                        break;
+                    case "LostItem":
+                        quest.NPCName = typeSpecificInfo[0];
+                        quest.TargetLocation = typeSpecificInfo[2];
+                        quest.ItemID = int.Parse(typeSpecificInfo[1]);
+                        quest.TileX = int.Parse(typeSpecificInfo[3]);
+                        quest.TileY = int.Parse(typeSpecificInfo[4]);
                         break;
                     default:
-                        Console.Error.WriteLine($"Could not understand quest type {quest.Type} of quest {quest.Name} with ID {quest.ItemIDToCraft}");
+                        Console.Error.WriteLine($"Could not understand quest type {quest.Type} of quest {quest.Name} with ID {pair.Key}");
                         break;
                 }
                 questMap.Add(pair.Key, quest);
@@ -59,13 +77,17 @@ namespace ContentCompiler
         public string Name { get; set; }
         public string Description { get; set; }
         public string Objective { get; set; }
-        public int? ItemIDToCraft { get; set; }
         public bool? ItemIsBigItem { get; set; }
         public string TargetLocation { get; set; }
         public string CompletionText { get; set; }
         public string ItemDeliveryTarget { get; set; }
-        public int? ItemIDToDeliver { get; set; }
+        public int? ItemID { get; set; }
         public string TargetMessage { get; set; }
-        public int? NumberOfItemsToDeliver { get; set; }
+        public int? NumberOfItems { get; set; }
+        public string MonsterNameToKill { get; set; }
+        public int? MonsterNumberToKill { get; set; }
+        public string NPCName { get; set; }
+        public int? TileX { get; set; }
+        public int? TileY { get; set; }
     }
 }
