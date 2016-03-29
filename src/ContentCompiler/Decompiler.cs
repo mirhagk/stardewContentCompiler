@@ -34,6 +34,7 @@ namespace ContentCompiler
             DecompileMinigames();
             DecompileTerrainFeatures();
             DecompileTileSheets();
+            DecompileMisc();
         }
         void DecompileSchedules()
         {
@@ -55,12 +56,13 @@ namespace ContentCompiler
         void DecompileMinigames() => DecompileTextureFolder("minigames");
         void DecompileTerrainFeatures() => DecompileTextureFolder("TerrainFeatures");
         void DecompileTileSheets() => DecompileTextureFolder("TileSheets");
+        void DecompileMisc() => DecompileTextureFolder("", "BloomCombine", "BloomExtract", "BrightWhite", "GaussianBlur");
 
-        void DecompileTextureFolder(string relativePath)
+        void DecompileTextureFolder(string relativePath, params string[] except)
         {
             var graphics = ServiceContainer.GetService<GraphicsDevice>();
             using (var spriteBatch = new SpriteBatch(graphics))
-                foreach (var asset in GetGameAssetsIn<Texture2D>(relativePath))
+                foreach (var asset in GetGameAssetsIn<Texture2D>(relativePath, except))
                     using (var target = new RenderTarget2D(graphics, asset.Content.Width, asset.Content.Height))
                     {
                         graphics.SetRenderTarget(target);
@@ -73,12 +75,23 @@ namespace ContentCompiler
                             target.SaveAsPng(stream, asset.Content.Width, asset.Content.Height);
                     }
         }
-        IEnumerable<GameAsset<T>> GetGameAssetsIn<T>(string relativePath)
+        IEnumerable<GameAsset<T>> GetGameAssetsIn<T>(string relativePath, string[] except = null)
         {
-            var items = Directory.EnumerateFiles(Path.Combine(Content.RootDirectory, relativePath)).Where(c => Path.GetExtension(c) == ".xnb").Select(c => Path.GetFileNameWithoutExtension(c));
+            except = except ?? new string[0];
+            var items = Directory.EnumerateFiles(Path.Combine(Content.RootDirectory, relativePath)).Where(c => Path.GetExtension(c) == ".xnb").Select(c => Path.GetFileNameWithoutExtension(c)).Except(except);
             foreach (var item in items)
             {
-                yield return GameAsset.Create(item, Content.Load<T>(Path.Combine(relativePath, item)));
+                GameAsset<T> asset = null;
+                try
+                {
+                    asset =  GameAsset.Create(item, Content.Load<T>(Path.Combine(relativePath, item)));
+                }
+                catch
+                {
+                    Console.Error.WriteLine($"Could not read {item} as {typeof(T).Name}");
+                }
+                if (asset != null)
+                    yield return asset;
             }
         }
     }
