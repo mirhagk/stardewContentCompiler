@@ -45,6 +45,7 @@ namespace ContentCompiler
             var decompiler = new Decompiler(content.Item1, content.Item2);
             decompiler.Decompile();
             content.Item1.Dispose();
+            content.Item2.GetService<GraphicsDevice>().Dispose();
         }
     }
     class Game1 : Game
