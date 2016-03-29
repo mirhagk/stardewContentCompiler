@@ -23,6 +23,7 @@ namespace ContentCompiler
         public void Decompile()
         {
             DecompileSchedules();
+            DecompileDialogue();
             DecompilePortraits();
             DecompileMonsters();
             DecompileFarmer();
@@ -43,6 +44,13 @@ namespace ContentCompiler
                 var schedule = Schedule.Decompile(asset);
 
                 File.WriteAllText(Path.Combine(Content.RootDirectory, "characters\\schedules", asset.Filename) + ".json", JsonConvert.SerializeObject(schedule, Formatting.Indented));
+            }
+        }
+        void DecompileDialogue()
+        {
+            foreach(var asset in GetGameAssetsIn<Dictionary<string, string>>("characters\\dialogue"))
+            {
+                File.WriteAllText(Path.Combine(Content.RootDirectory, "characters\\dialogue", asset.Filename) + ".json", JsonConvert.SerializeObject(asset.Content, Formatting.Indented));
             }
         }
         void DecompilePortraits() => DecompileTextureFolder("portraits");
