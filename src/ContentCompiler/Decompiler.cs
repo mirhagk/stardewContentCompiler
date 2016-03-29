@@ -72,13 +72,17 @@ namespace ContentCompiler
         void DecompileToJson(string relativePath)
         {
             foreach (var asset in GetGameAssetsIn<Dictionary<string, string>>(relativePath))
-            {
-                File.WriteAllText(Path.Combine(Content.RootDirectory, relativePath, asset.Filename) + ".json", JsonConvert.SerializeObject(asset.Content, Formatting.Indented));
-            }
+                OutputToFile(relativePath, asset.Filename, asset.Content);
         }
         void OutputToFile<T>(string relativePath, string filename, T data)
         {
-            File.WriteAllText(Path.Combine(Content.RootDirectory, relativePath, filename) + ".json", JsonConvert.SerializeObject(data, Formatting.Indented));
+            var serializer = new JsonSerializer
+            {
+                NullValueHandling = NullValueHandling.Ignore,
+                Formatting = Formatting.Indented,
+            };
+            using (var writer = new StreamWriter(Path.Combine(Content.RootDirectory, relativePath, filename) + ".json"))
+                serializer.Serialize(writer, data);
         }
         void DecompileTextureFolder(string relativePath, params string[] except)
         {
