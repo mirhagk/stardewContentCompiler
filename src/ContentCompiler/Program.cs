@@ -47,6 +47,13 @@ namespace ContentCompiler
                     });
                     if (value.StartsWith("NOT"))
                     {
+                        var pieces = value.Split('/')[0].Split(' ');
+                        schedule.ScheduledItems.Last().Condition = new Schedule.ScheduleItem.NotCondition()
+                        {
+                            Type = pieces[1],
+                            Name = pieces[2],
+                            Level = int.Parse(pieces[3]),
+                        };
                         value = string.Join("/", value.Split('/').Skip(1));
                     }
                     if (value.StartsWith("GOTO"))
@@ -101,7 +108,9 @@ namespace ContentCompiler
             }
             public class NotCondition
             {
-
+                public string Type { get; set; }
+                public string Name { get; set; }
+                public int Level { get; set; }
             }
             public string Key { get; set; }
             public List<TargetLocationTime> TargetLocations { get; set; } = new List<TargetLocationTime>();
