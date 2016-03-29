@@ -43,15 +43,20 @@ namespace ContentCompiler
         {
             using (var content = SetupContentManager(root))
             {
-                var characters = Directory.EnumerateFiles(root + "\\characters\\schedules").Where(c => Path.GetExtension(c) == ".xnb").Select(c => Path.GetFileNameWithoutExtension(c));
-                foreach (var character in characters)
+                foreach(var asset in GetGameAssetsIn<Dictionary<string, string>>(content, "characters\\schedules"))
                 {
-                    var scheduleRaw = content.Load<Dictionary<string, string>>("characters\\schedules\\" + character);
+                    var schedule = Schedule.Decompile(asset);
 
-                    var schedule = Schedule.Decompile(scheduleRaw, character);
-
-                    File.WriteAllText(Path.Combine(root, "characters\\schedules", character) + ".json", JsonConvert.SerializeObject(schedule, Formatting.Indented));
+                    File.WriteAllText(Path.Combine(root, "characters\\schedules", asset.Filename) + ".json", JsonConvert.SerializeObject(schedule, Formatting.Indented));
                 }
+            }
+        }
+        static IEnumerable<GameAsset<T>> GetGameAssetsIn<T>(ContentManager content, string relativePath)
+        {
+            var items = Directory.EnumerateFiles(Path.Combine(content.RootDirectory, relativePath)).Where(c => Path.GetExtension(c) == ".xnb").Select(c => Path.GetFileNameWithoutExtension(c));
+            foreach(var item in items)
+            {
+                yield return GameAsset.Create(item, content.Load<T>(Path.Combine(relativePath, item)));
             }
         }
 

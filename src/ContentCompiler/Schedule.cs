@@ -8,9 +8,10 @@ namespace ContentCompiler
 {
     class Schedule
     {
-        public static Schedule Decompile(Dictionary<string, string> content, string character)
+        public static Schedule Decompile(GameAsset<Dictionary<string, string>> asset)
         {
-            var schedule = new Schedule() { Character = character };
+            var content = asset.Content;
+            var schedule = new Schedule() { Character = asset.Filename };
             foreach (var keyPair in content)
             {
                 if (keyPair.Key.EndsWith("_Replacement"))
