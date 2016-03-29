@@ -38,18 +38,30 @@ namespace ContentCompiler
                 var schedule = new Schedule() { Character = character };
                 foreach(var keyPair in scheduleRaw)
                 {
+                    if (keyPair.Key.EndsWith("_Replacement"))
+                        continue;
+                    var value = keyPair.Value;
                     schedule.ScheduledItems.Add(new Schedule.ScheduleItem()
                     {
                         Key = keyPair.Key
                     });
-                    if (keyPair.Value.StartsWith("GOTO"))
+                    if (value.StartsWith("NOT"))
+                    {
+                        value = string.Join("/", value.Split('/').Skip(1));
+                    }
+                    if (value.StartsWith("GOTO"))
                     {
                         schedule.ScheduledItems.Last().GotoKey = keyPair.Value.Substring(5);
                         continue;
                     }
-                    else if (keyPair.Value.StartsWith("NOT"))
+                    var items = value.Split('/');
+                    foreach(var item in items)
                     {
-
+                        var pieces = item.Split(' ');
+                        schedule.ScheduledItems.Last().TargetLocations.Add(new Schedule.ScheduleItem.TargetLocationTime()
+                        {
+                            Time = int.Parse(pieces[0])
+                        });
                     }
                     Console.WriteLine(keyPair.Key);
                     Console.WriteLine(keyPair.Value);
@@ -69,7 +81,7 @@ namespace ContentCompiler
         {
             public class TargetLocationTime
             {
-                public string Time { get; set; }
+                public int Time { get; set; }
                 public string Location { get; set; }
                 public int X { get; set; }
                 public int Y { get; set; }
