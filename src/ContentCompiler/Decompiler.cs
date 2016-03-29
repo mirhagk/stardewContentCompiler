@@ -26,13 +26,14 @@ namespace ContentCompiler
                 File.WriteAllText(Path.Combine(content.RootDirectory, "characters\\schedules", asset.Filename) + ".json", JsonConvert.SerializeObject(schedule, Formatting.Indented));
             }
         }
-        void DecompilePortraits(ContentManager content)
+        void DecompilePortraits(ContentManager content) => DecompileTextureFolder(content, "portraits");
+        
+        void DecompileTextureFolder(ContentManager content, string relativePath)
         {
-            foreach (var asset in GetGameAssetsIn<Texture2D>(content, "portraits"))
-                using (var stream = File.Create(content.RootDirectory + "\\Portraits\\" + asset.Filename + ".png"))
+            foreach (var asset in GetGameAssetsIn<Texture2D>(content, relativePath))
+                using (var stream = File.Create(Path.Combine(content.RootDirectory, relativePath, asset.Filename) + ".png"))
                     asset.Content.SaveAsPng(stream, asset.Content.Width, asset.Content.Height);
         }
-        
         IEnumerable<GameAsset<T>> GetGameAssetsIn<T>(ContentManager content, string relativePath)
         {
             var items = Directory.EnumerateFiles(Path.Combine(content.RootDirectory, relativePath)).Where(c => Path.GetExtension(c) == ".xnb").Select(c => Path.GetFileNameWithoutExtension(c));
