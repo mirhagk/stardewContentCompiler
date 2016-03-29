@@ -32,6 +32,8 @@ namespace ContentCompiler
             DecompileLighting();
             DecompileMines();
             DecompileMinigames();
+            DecompileTerrainFeatures();
+            DecompileTileSheets();
         }
         void DecompileSchedules()
         {
@@ -51,6 +53,8 @@ namespace ContentCompiler
         void DecompileLighting() => DecompileTextureFolder("loosesprites\\lighting");
         void DecompileMines() => DecompileTextureFolder("mines");
         void DecompileMinigames() => DecompileTextureFolder("minigames");
+        void DecompileTerrainFeatures() => DecompileTextureFolder("TerrainFeatures");
+        void DecompileTileSheets() => DecompileTextureFolder("TileSheets");
 
         void DecompileTextureFolder(string relativePath)
         {
