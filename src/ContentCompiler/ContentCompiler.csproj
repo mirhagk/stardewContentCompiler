@@ -62,6 +62,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Decompiler.cs" />
     <Compile Include="Extensions.cs" />
     <Compile Include="GameAsset.cs" />
     <Compile Include="Program.cs" />
