@@ -29,17 +29,32 @@ namespace ContentCompiler
             var root = @"F:\steam\steamapps\common\Stardew Valley\Content";
             var content = SetupContentManager(root);
 
-            var characters = Directory.EnumerateFiles(root + "\\characters\\schedules").Select(c=>Path.GetFileNameWithoutExtension(c));
+            var characters = Directory.EnumerateFiles(root + "\\characters\\schedules").Where(c=>Path.GetExtension(c)==".xnb").Select(c=>Path.GetFileNameWithoutExtension(c));
             foreach (var character in characters)
             {
-                var schedule = content.Load<Dictionary<string, string>>("characters\\schedules\\" + character);
-                var json = JsonConvert.SerializeObject(schedule, Formatting.Indented);
+                var scheduleRaw = content.Load<Dictionary<string, string>>("characters\\schedules\\" + character);
+                var json = JsonConvert.SerializeObject(scheduleRaw, Formatting.Indented);
                 File.WriteAllText(Path.Combine(root, "characters\\schedules", character) + ".json", json);
-                foreach(var keyPair in schedule)
+                var schedule = new Schedule() { Character = character };
+                foreach(var keyPair in scheduleRaw)
                 {
+                    schedule.ScheduledItems.Add(new Schedule.ScheduleItem()
+                    {
+                        Key = keyPair.Key
+                    });
+                    if (keyPair.Value.StartsWith("GOTO"))
+                    {
+                        schedule.ScheduledItems.Last().GotoKey = keyPair.Value.Substring(5);
+                        continue;
+                    }
+                    else if (keyPair.Value.StartsWith("NOT"))
+                    {
+
+                    }
                     Console.WriteLine(keyPair.Key);
                     Console.WriteLine(keyPair.Value);
                 }
+                File.WriteAllText(Path.Combine(root, "characters\\schedules", character) + ".src.json", JsonConvert.SerializeObject(schedule, Formatting.Indented));
             }
 
             //content.Load<Dictionary<string,string>>("characters\\schedules\\leah").Dump();
@@ -47,5 +62,30 @@ namespace ContentCompiler
     }
     class Game1 : Microsoft.Xna.Framework.Game
     {
+    }
+    class Schedule
+    {
+        public class ScheduleItem
+        {
+            public class TargetLocationTime
+            {
+                public string Time { get; set; }
+                public string Location { get; set; }
+                public int X { get; set; }
+                public int Y { get; set; }
+                public int Direction { get; set; }
+
+            }
+            public class NotCondition
+            {
+
+            }
+            public string Key { get; set; }
+            public List<TargetLocationTime> TargetLocations { get; set; } = new List<TargetLocationTime>();
+            public string GotoKey { get; set; }
+            public NotCondition Condition { get; set; }
+        }
+        public string Character { get; set; }
+        public List<ScheduleItem> ScheduledItems { get; set; } = new List<ScheduleItem>();
     }
 }
