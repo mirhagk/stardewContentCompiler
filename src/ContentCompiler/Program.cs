@@ -25,7 +25,7 @@ namespace ContentCompiler
             {
                 Decompile(args.ContentRoot);
                 DecompilePortraits(args.ContentRoot);
-            }
+        }
         }
         static ContentManager SetupContentManager(string root)
         {
@@ -47,8 +47,34 @@ namespace ContentCompiler
             foreach (var character in characters)
             {
                 var scheduleRaw = content.Load<Dictionary<string, string>>("characters\\schedules\\" + character);
+
+                var schedule = Schedule.Decompile(scheduleRaw, character);
+
+                File.WriteAllText(Path.Combine(root, "characters\\schedules", character) + ".json", JsonConvert.SerializeObject(schedule, Formatting.Indented));
+            }
+
+            //content.Load<Dictionary<string,string>>("characters\\schedules\\leah").Dump();
+        }
+    }
+    static class Extensions
+    {
+        public static int? GetInt(this string value)
+        {
+            int result;
+            if (int.TryParse(value, out result))
+                return result;
+            return null;
+        }
+    }
+    class Game1 : Microsoft.Xna.Framework.Game
+    {
+    }
+    class Schedule
+    {
+        public static Schedule Decompile(Dictionary<string,string> content, string character)
+        {
                 var schedule = new Schedule() { Character = character };
-                foreach(var keyPair in scheduleRaw)
+            foreach (var keyPair in content)
                 {
                     if (keyPair.Key.EndsWith("_Replacement"))
                         continue;
@@ -83,7 +109,7 @@ namespace ContentCompiler
                             Location = pieces[1],
                             X = int.Parse(pieces[2]),
                             Y = int.Parse(pieces[3]),
-                            Direction = GetInt(pieces[4])??2,
+                        Direction = pieces[4].GetInt() ?? 2,
                         });
                     }
                     Console.WriteLine(keyPair.Key);
@@ -119,12 +145,12 @@ namespace ContentCompiler
                 return result;
             return null;
         }
+            return schedule;
     }
-    class Game1 : Microsoft.Xna.Framework.Game
+        public Dictionary<string, string> Compile()
     {
+            throw new NotImplementedException();
     }
-    class Schedule
-    {
         public class ScheduleItem
         {
             public class TargetLocationTime
