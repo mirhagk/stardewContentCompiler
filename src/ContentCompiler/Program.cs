@@ -52,8 +52,6 @@ namespace ContentCompiler
 
                 File.WriteAllText(Path.Combine(root, "characters\\schedules", character) + ".json", JsonConvert.SerializeObject(schedule, Formatting.Indented));
             }
-
-            //content.Load<Dictionary<string,string>>("characters\\schedules\\leah").Dump();
         }
 
         static void DecompilePortraits(string root)
