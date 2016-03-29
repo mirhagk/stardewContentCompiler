@@ -60,7 +60,11 @@ namespace ContentCompiler
                         var pieces = item.Split(' ');
                         schedule.ScheduledItems.Last().TargetLocations.Add(new Schedule.ScheduleItem.TargetLocationTime()
                         {
-                            Time = int.Parse(pieces[0])
+                            Time = int.Parse(pieces[0]),
+                            Location = pieces[1],
+                            X = int.Parse(pieces[2]),
+                            Y = int.Parse(pieces[3]),
+                            Direction = GetInt(pieces[4])??2,
                         });
                     }
                     Console.WriteLine(keyPair.Key);
@@ -70,6 +74,13 @@ namespace ContentCompiler
             }
 
             //content.Load<Dictionary<string,string>>("characters\\schedules\\leah").Dump();
+        }
+        static int? GetInt(string value)
+        {
+            int result;
+            if (int.TryParse(value, out result))
+                return result;
+            return null;
         }
     }
     class Game1 : Microsoft.Xna.Framework.Game
