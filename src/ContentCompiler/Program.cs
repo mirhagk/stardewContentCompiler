@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework;
 
 namespace ContentCompiler
 {
@@ -26,28 +27,27 @@ namespace ContentCompiler
                 Decompile(args.ContentRoot);
             }
         }
-        static ContentManager SetupContentManager(string root)
+        static Tuple<ContentManager,GameServiceContainer> SetupContentManager(string root)
         {
-
-            var serviceContainer = new Microsoft.Xna.Framework.GameServiceContainer();
+            var serviceContainer = new GameServiceContainer();
             var content = new ContentManager(serviceContainer, root);
-            var graphicsDeviceManager = new Microsoft.Xna.Framework.GraphicsDeviceManager(new Game1());
+            var graphicsDeviceManager = new GraphicsDeviceManager(new Game1());
             serviceContainer.AddService<IGraphicsDeviceService>(graphicsDeviceManager);
             graphicsDeviceManager.CreateDevice();
             serviceContainer.AddService(typeof(GraphicsDevice), graphicsDeviceManager.GraphicsDevice);
-            return content;
+            return Tuple.Create(content, serviceContainer);
         }
 
         static void Decompile(string root)
         {
-            using (var content = SetupContentManager(root))
-            {
-                var decompiler = new Decompiler();
-                decompiler.Decompile(content);
-            }
+            var content = SetupContentManager(root);
+
+            var decompiler = new Decompiler(content.Item1, content.Item2);
+            decompiler.Decompile();
+            content.Item1.Dispose();
         }
     }
-    class Game1 : Microsoft.Xna.Framework.Game
+    class Game1 : Game
     {
     }
 }

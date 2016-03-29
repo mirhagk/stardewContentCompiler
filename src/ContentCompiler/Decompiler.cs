@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework.Content;
+﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Newtonsoft.Json;
 using System;
@@ -12,34 +13,56 @@ namespace ContentCompiler
 {
     class Decompiler
     {
-        public void Decompile(ContentManager content)
+        ContentManager Content { get; }
+        GameServiceContainer ServiceContainer { get; }
+        public Decompiler(ContentManager content, GameServiceContainer serviceContainer)
         {
-            DecompileSchedules(content);
-            DecompilePortraits(content);
+            Content = content;
+            ServiceContainer = serviceContainer;
         }
-        void DecompileSchedules(ContentManager content)
+        public void Decompile()
         {
-            foreach (var asset in GetGameAssetsIn<Dictionary<string, string>>(content, "characters\\schedules"))
+            DecompileSchedules();
+            DecompilePortraits();
+            DecompileMonsters();
+        }
+        void DecompileSchedules()
+        {
+            foreach (var asset in GetGameAssetsIn<Dictionary<string, string>>("characters\\schedules"))
             {
                 var schedule = Schedule.Decompile(asset);
 
-                File.WriteAllText(Path.Combine(content.RootDirectory, "characters\\schedules", asset.Filename) + ".json", JsonConvert.SerializeObject(schedule, Formatting.Indented));
+                File.WriteAllText(Path.Combine(Content.RootDirectory, "characters\\schedules", asset.Filename) + ".json", JsonConvert.SerializeObject(schedule, Formatting.Indented));
             }
         }
-        void DecompilePortraits(ContentManager content) => DecompileTextureFolder(content, "portraits");
-        
-        void DecompileTextureFolder(ContentManager content, string relativePath)
+        void DecompilePortraits() => DecompileTextureFolder("portraits");
+        void DecompileMonsters() => DecompileTextureFolder("characters\\monsters");
+
+        void DecompileTextureFolder(string relativePath)
         {
-            foreach (var asset in GetGameAssetsIn<Texture2D>(content, relativePath))
-                using (var stream = File.Create(Path.Combine(content.RootDirectory, relativePath, asset.Filename) + ".png"))
-                    asset.Content.SaveAsPng(stream, asset.Content.Width, asset.Content.Height);
+            GameServiceContainer serviceContainer = new GameServiceContainer();
+
+            var graphics = serviceContainer.GetService<GraphicsDevice>();
+            using (var spriteBatch = new SpriteBatch(graphics))
+                foreach (var asset in GetGameAssetsIn<Texture2D>(relativePath))
+                    using (var target = new RenderTarget2D(graphics, asset.Content.Width, asset.Content.Height))
+                    {
+                        graphics.SetRenderTarget(target);
+                        spriteBatch.Begin();
+                        spriteBatch.Draw(asset.Content, new Rectangle(0, 0, asset.Content.Width, asset.Content.Height), Color.White);
+                        spriteBatch.End();
+                        graphics.SetRenderTarget(null);
+
+                        using (var stream = File.Create(Path.Combine(Content.RootDirectory, relativePath, asset.Filename) + ".png"))
+                            target.SaveAsPng(stream, asset.Content.Width, asset.Content.Height);
+                    }
         }
-        IEnumerable<GameAsset<T>> GetGameAssetsIn<T>(ContentManager content, string relativePath)
+        IEnumerable<GameAsset<T>> GetGameAssetsIn<T>(string relativePath)
         {
-            var items = Directory.EnumerateFiles(Path.Combine(content.RootDirectory, relativePath)).Where(c => Path.GetExtension(c) == ".xnb").Select(c => Path.GetFileNameWithoutExtension(c));
+            var items = Directory.EnumerateFiles(Path.Combine(Content.RootDirectory, relativePath)).Where(c => Path.GetExtension(c) == ".xnb").Select(c => Path.GetFileNameWithoutExtension(c));
             foreach (var item in items)
             {
-                yield return GameAsset.Create(item, content.Load<T>(Path.Combine(relativePath, item)));
+                yield return GameAsset.Create(item, Content.Load<T>(Path.Combine(relativePath, item)));
             }
         }
     }
