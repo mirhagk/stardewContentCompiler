@@ -33,8 +33,6 @@ namespace ContentCompiler
             foreach (var character in characters)
             {
                 var scheduleRaw = content.Load<Dictionary<string, string>>("characters\\schedules\\" + character);
-                var json = JsonConvert.SerializeObject(scheduleRaw, Formatting.Indented);
-                File.WriteAllText(Path.Combine(root, "characters\\schedules", character) + ".json", json);
                 var schedule = new Schedule() { Character = character };
                 foreach(var keyPair in scheduleRaw)
                 {
