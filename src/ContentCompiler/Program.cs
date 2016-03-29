@@ -24,7 +24,6 @@ namespace ContentCompiler
             if (args.Decompile)
             {
                 Decompile(args.ContentRoot);
-                DecompilePortraits(args.ContentRoot);
             }
         }
         static ContentManager SetupContentManager(string root)
@@ -49,6 +48,7 @@ namespace ContentCompiler
 
                     File.WriteAllText(Path.Combine(root, "characters\\schedules", asset.Filename) + ".json", JsonConvert.SerializeObject(schedule, Formatting.Indented));
                 }
+                DecompilePortraits(content);
             }
         }
         static IEnumerable<GameAsset<T>> GetGameAssetsIn<T>(ContentManager content, string relativePath)
@@ -60,12 +60,11 @@ namespace ContentCompiler
             }
         }
 
-        static void DecompilePortraits(string root)
+        static void DecompilePortraits(ContentManager content)
         {
-            using (var content = SetupContentManager(root))
-                foreach (var asset in GetGameAssetsIn<Texture2D>(content, "portraits"))
-                    using (var stream = File.Create(root + "\\Portraits\\" + asset.Filename + ".png"))
-                        asset.Content.SaveAsPng(stream, asset.Content.Width, asset.Content.Height);
+            foreach (var asset in GetGameAssetsIn<Texture2D>(content, "portraits"))
+                using (var stream = File.Create(content.RootDirectory + "\\Portraits\\" + asset.Filename + ".png"))
+                    asset.Content.SaveAsPng(stream, asset.Content.Width, asset.Content.Height);
         }
     }
     class Game1 : Microsoft.Xna.Framework.Game
