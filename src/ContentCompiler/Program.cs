@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace ContentCompiler
 {
@@ -21,17 +22,23 @@ namespace ContentCompiler
         {
             var args = PowerCommandParser.Parser.ParseArguments<Arguments>(rawArgs);
             if (args.Decompile)
+            {
                 Decompile(args.ContentRoot);
+                DecompilePortraits(args.ContentRoot);
+            }
         }
         static ContentManager SetupContentManager(string root)
         {
 
             var serviceContainer = new Microsoft.Xna.Framework.GameServiceContainer();
             var content = new Microsoft.Xna.Framework.Content.ContentManager(serviceContainer, root);
-            var graphicsDevice = new Microsoft.Xna.Framework.GraphicsDeviceManager(new Game1());
-            serviceContainer.AddService<Microsoft.Xna.Framework.Graphics.IGraphicsDeviceService>(graphicsDevice);
+            var graphicsDeviceManager = new Microsoft.Xna.Framework.GraphicsDeviceManager(new Game1());
+            serviceContainer.AddService<Microsoft.Xna.Framework.Graphics.IGraphicsDeviceService>(graphicsDeviceManager);
+            graphicsDeviceManager.CreateDevice();
+            serviceContainer.AddService(typeof(GraphicsDevice), graphicsDeviceManager.GraphicsDevice);
             return content;
         }
+
         static void Decompile(string root)
         {
             var content = SetupContentManager(root);
@@ -87,6 +94,24 @@ namespace ContentCompiler
 
             //content.Load<Dictionary<string,string>>("characters\\schedules\\leah").Dump();
         }
+
+        static void DecompilePortraits(string root)
+        {
+            using (var content = SetupContentManager(root))
+            {
+                var portraits = Directory.EnumerateFiles(root + "\\Portraits").Where(c => Path.GetExtension(c) == ".xnb").Select(c => Path.GetFileNameWithoutExtension(c));
+                foreach (var portrait in portraits)
+                {
+                    var texture = content.Load<Texture2D>("Portraits\\" + portrait);
+
+                    using (var stream = File.Create(root + "\\Portraits\\" + portrait + ".png"))
+                    {
+                        texture.SaveAsPng(stream, texture.Width, texture.Height);
+                    }
+                }
+            }
+        }
+
         static int? GetInt(string value)
         {
             int result;
