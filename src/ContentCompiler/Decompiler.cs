@@ -24,6 +24,9 @@ namespace ContentCompiler
         {
             DecompileSchedules();
             DecompileDialogue();
+            DecompileTV();
+            DecompileFestivals();
+            DecompileEvents();
             DecompilePortraits();
             DecompileMonsters();
             DecompileFarmer();
@@ -43,16 +46,19 @@ namespace ContentCompiler
             {
                 var schedule = Schedule.Decompile(asset);
 
-                File.WriteAllText(Path.Combine(Content.RootDirectory, "characters\\schedules", asset.Filename) + ".json", JsonConvert.SerializeObject(schedule, Formatting.Indented));
+                OutputToFile("characters\\schedules", asset.Filename, schedule);
             }
         }
-        void DecompileDialogue()
+        void DecompileQuests()
         {
-            foreach(var asset in GetGameAssetsIn<Dictionary<string, string>>("characters\\dialogue"))
-            {
-                File.WriteAllText(Path.Combine(Content.RootDirectory, "characters\\dialogue", asset.Filename) + ".json", JsonConvert.SerializeObject(asset.Content, Formatting.Indented));
-            }
+            var quests = Content.Load<Dictionary<int, string>>("Data\\Quests");
+
+            OutputToFile("Data", "Quests", quests);
         }
+        void DecompileDialogue() => DecompileToJson("characters\\dialogue");
+        void DecompileTV() => DecompileToJson("data\\tv");
+        void DecompileFestivals() => DecompileToJson("data\\Festivals");
+        void DecompileEvents() => DecompileToJson("data\\Events");
         void DecompilePortraits() => DecompileTextureFolder("portraits");
         void DecompileMonsters() => DecompileTextureFolder("characters\\monsters");
         void DecompileFarmer() => DecompileTextureFolder("characters\\farmer");
@@ -66,6 +72,17 @@ namespace ContentCompiler
         void DecompileTileSheets() => DecompileTextureFolder("TileSheets");
         void DecompileMisc() => DecompileTextureFolder("", "BloomCombine", "BloomExtract", "BrightWhite", "GaussianBlur");
 
+        void DecompileToJson(string relativePath)
+        {
+            foreach (var asset in GetGameAssetsIn<Dictionary<string, string>>(relativePath))
+            {
+                File.WriteAllText(Path.Combine(Content.RootDirectory, relativePath, asset.Filename) + ".json", JsonConvert.SerializeObject(asset.Content, Formatting.Indented));
+            }
+        }
+        void OutputToFile<T>(string relativePath, string filename, T data)
+        {
+            File.WriteAllText(Path.Combine(Content.RootDirectory, relativePath, filename) + ".json", JsonConvert.SerializeObject(data, Formatting.Indented));
+        }
         void DecompileTextureFolder(string relativePath, params string[] except)
         {
             var graphics = ServiceContainer.GetService<GraphicsDevice>();
