@@ -40,9 +40,7 @@ namespace ContentCompiler
 
         void DecompileTextureFolder(string relativePath)
         {
-            GameServiceContainer serviceContainer = new GameServiceContainer();
-
-            var graphics = serviceContainer.GetService<GraphicsDevice>();
+            var graphics = ServiceContainer.GetService<GraphicsDevice>();
             using (var spriteBatch = new SpriteBatch(graphics))
                 foreach (var asset in GetGameAssetsIn<Texture2D>(relativePath))
                     using (var target = new RenderTarget2D(graphics, asset.Content.Width, asset.Content.Height))
