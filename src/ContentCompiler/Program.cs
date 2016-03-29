@@ -55,71 +55,6 @@ namespace ContentCompiler
 
             //content.Load<Dictionary<string,string>>("characters\\schedules\\leah").Dump();
         }
-    }
-    static class Extensions
-    {
-        public static int? GetInt(this string value)
-        {
-            int result;
-            if (int.TryParse(value, out result))
-                return result;
-            return null;
-        }
-    }
-    class Game1 : Microsoft.Xna.Framework.Game
-    {
-    }
-    class Schedule
-    {
-        public static Schedule Decompile(Dictionary<string,string> content, string character)
-        {
-                var schedule = new Schedule() { Character = character };
-            foreach (var keyPair in content)
-                {
-                    if (keyPair.Key.EndsWith("_Replacement"))
-                        continue;
-                    var value = keyPair.Value;
-                    schedule.ScheduledItems.Add(new Schedule.ScheduleItem()
-                    {
-                        Key = keyPair.Key
-                    });
-                    if (value.StartsWith("NOT"))
-                    {
-                        var pieces = value.Split('/')[0].Split(' ');
-                        schedule.ScheduledItems.Last().Condition = new Schedule.ScheduleItem.NotCondition()
-                        {
-                            Type = pieces[1],
-                            Name = pieces[2],
-                            Level = int.Parse(pieces[3]),
-                        };
-                        value = string.Join("/", value.Split('/').Skip(1));
-                    }
-                    if (value.StartsWith("GOTO"))
-                    {
-                        schedule.ScheduledItems.Last().GotoKey = keyPair.Value.Substring(5);
-                        continue;
-                    }
-                    var items = value.Split('/');
-                    foreach(var item in items)
-                    {
-                        var pieces = item.Split(' ');
-                        schedule.ScheduledItems.Last().TargetLocations.Add(new Schedule.ScheduleItem.TargetLocationTime()
-                        {
-                            Time = int.Parse(pieces[0]),
-                            Location = pieces[1],
-                            X = int.Parse(pieces[2]),
-                            Y = int.Parse(pieces[3]),
-                        Direction = pieces[4].GetInt() ?? 2,
-                        });
-                    }
-                    Console.WriteLine(keyPair.Key);
-                    Console.WriteLine(keyPair.Value);
-                }
-                File.WriteAllText(Path.Combine(root, "characters\\schedules", character) + ".json", JsonConvert.SerializeObject(schedule, Formatting.Indented));
-            }
-
-            //content.Load<Dictionary<string,string>>("characters\\schedules\\leah").Dump();
-        }
 
         static void DecompilePortraits(string root)
         {
@@ -137,20 +72,72 @@ namespace ContentCompiler
                 }
             }
         }
-
-        static int? GetInt(string value)
+    }
+    static class Extensions
+    {
+        public static int? GetInt(this string value)
         {
             int result;
             if (int.TryParse(value, out result))
                 return result;
             return null;
         }
-            return schedule;
     }
-        public Dictionary<string, string> Compile()
+    class Game1 : Microsoft.Xna.Framework.Game
     {
-            throw new NotImplementedException();
     }
+    class Schedule
+    {
+        public static Schedule Decompile(Dictionary<string, string> content, string character)
+        {
+            var schedule = new Schedule() { Character = character };
+            foreach (var keyPair in content)
+            {
+                if (keyPair.Key.EndsWith("_Replacement"))
+                    continue;
+                var value = keyPair.Value;
+                schedule.ScheduledItems.Add(new Schedule.ScheduleItem()
+                {
+                    Key = keyPair.Key
+                });
+                if (value.StartsWith("NOT"))
+                {
+                    var pieces = value.Split('/')[0].Split(' ');
+                    schedule.ScheduledItems.Last().Condition = new Schedule.ScheduleItem.NotCondition()
+                    {
+                        Type = pieces[1],
+                        Name = pieces[2],
+                        Level = int.Parse(pieces[3]),
+                    };
+                    value = string.Join("/", value.Split('/').Skip(1));
+                }
+                if (value.StartsWith("GOTO"))
+                {
+                    schedule.ScheduledItems.Last().GotoKey = keyPair.Value.Substring(5);
+                    continue;
+                }
+                var items = value.Split('/');
+                foreach (var item in items)
+                {
+                    var pieces = item.Split(' ');
+                    schedule.ScheduledItems.Last().TargetLocations.Add(new Schedule.ScheduleItem.TargetLocationTime()
+                    {
+                        Time = int.Parse(pieces[0]),
+                        Location = pieces[1],
+                        X = int.Parse(pieces[2]),
+                        Y = int.Parse(pieces[3]),
+                        Direction = pieces[4].GetInt() ?? 2,
+                    });
+                }
+                Console.WriteLine(keyPair.Key);
+                Console.WriteLine(keyPair.Value);
+            }
+            return schedule;
+        }
+        public Dictionary<string, string> Compile()
+        {
+            throw new NotImplementedException();
+        }
         public class ScheduleItem
         {
             public class TargetLocationTime
