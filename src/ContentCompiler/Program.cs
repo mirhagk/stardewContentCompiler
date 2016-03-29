@@ -25,15 +25,15 @@ namespace ContentCompiler
             {
                 Decompile(args.ContentRoot);
                 DecompilePortraits(args.ContentRoot);
-        }
+            }
         }
         static ContentManager SetupContentManager(string root)
         {
 
             var serviceContainer = new Microsoft.Xna.Framework.GameServiceContainer();
-            var content = new Microsoft.Xna.Framework.Content.ContentManager(serviceContainer, root);
+            var content = new ContentManager(serviceContainer, root);
             var graphicsDeviceManager = new Microsoft.Xna.Framework.GraphicsDeviceManager(new Game1());
-            serviceContainer.AddService<Microsoft.Xna.Framework.Graphics.IGraphicsDeviceService>(graphicsDeviceManager);
+            serviceContainer.AddService<IGraphicsDeviceService>(graphicsDeviceManager);
             graphicsDeviceManager.CreateDevice();
             serviceContainer.AddService(typeof(GraphicsDevice), graphicsDeviceManager.GraphicsDevice);
             return content;
