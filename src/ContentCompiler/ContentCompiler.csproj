@@ -67,6 +67,7 @@
     <Compile Include="GameAsset.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Quest.cs" />
     <Compile Include="Schedule.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -46,8 +46,11 @@ namespace ContentCompiler
             foreach (var asset in GetGameAssetsIn<Dictionary<string, string>>("characters\\schedules"))
                 OutputToFile("characters\\schedules", asset.Filename, Schedule.Decompile(asset));
         }
-        void DecompileQuests() =>
-            OutputToFile("Data", "Quests", Content.Load<Dictionary<int, string>>("Data\\Quests"));
+        void DecompileQuests()
+        {
+            var quests = Quest.Decompile(Content.Load<Dictionary<int, string>>("Data\\Quests"));
+            OutputToFile("Data", "Quests", quests);
+        }
 
         void DecompileDialogue() => DecompileToJson("characters\\dialogue");
         void DecompileTV() => DecompileToJson("data\\tv");
