@@ -15,10 +15,18 @@ namespace ContentCompiler
     {
         ContentManager Content { get; }
         GameServiceContainer ServiceContainer { get; }
-        public Decompiler(ContentManager content, GameServiceContainer serviceContainer)
+		string OutputPath { get; }
+
+        public Decompiler(ContentManager content, GameServiceContainer serviceContainer, string outputPath)
         {
             Content = content;
             ServiceContainer = serviceContainer;
+			OutputPath = outputPath;
+
+			if (Directory.Exists(outputPath) == false)
+			{
+				Directory.CreateDirectory(outputPath);
+			}
         }
         public void Decompile()
         {
@@ -81,7 +89,12 @@ namespace ContentCompiler
                 NullValueHandling = NullValueHandling.Ignore,
                 Formatting = Formatting.Indented,
             };
-            using (var writer = new StreamWriter(Path.Combine(Content.RootDirectory, relativePath, filename) + ".json"))
+			string tempPath = Path.Combine(OutputPath, relativePath);
+			if (Directory.Exists(tempPath) == false)
+			{
+				Directory.CreateDirectory(tempPath);
+			}
+			using (var writer = new StreamWriter(Path.Combine(tempPath, filename) + ".json"))
                 serializer.Serialize(writer, data);
         }
         void DecompileTextureFolder(string relativePath, params string[] except)
@@ -97,7 +110,12 @@ namespace ContentCompiler
                         spriteBatch.End();
                         graphics.SetRenderTarget(null);
 
-                        using (var stream = File.Create(Path.Combine(Content.RootDirectory, relativePath, asset.Filename) + ".png"))
+						string tempPath = Path.Combine(OutputPath, relativePath);
+						if (Directory.Exists(tempPath) == false)
+						{
+							Directory.CreateDirectory(tempPath);
+						}
+						using (var stream = File.Create(Path.Combine(tempPath, asset.Filename) + ".png"))
                             target.SaveAsPng(stream, asset.Content.Width, asset.Content.Height);
                     }
         }
