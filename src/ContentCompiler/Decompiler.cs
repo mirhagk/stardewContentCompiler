@@ -102,10 +102,10 @@ namespace ContentCompiler
             var graphics = ServiceContainer.GetService<GraphicsDevice>();
             using (var spriteBatch = new SpriteBatch(graphics))
                 foreach (var asset in GetGameAssetsIn<Texture2D>(relativePath, except))
-                    using (var target = new RenderTarget2D(graphics, asset.Content.Width, asset.Content.Height))
+					using (var target = new RenderTarget2D(graphics, asset.Content.Width, asset.Content.Height))
                     {
                         graphics.SetRenderTarget(target);
-                        spriteBatch.Begin();
+						spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Opaque);
                         spriteBatch.Draw(asset.Content, new Rectangle(0, 0, asset.Content.Width, asset.Content.Height), Color.White);
                         spriteBatch.End();
                         graphics.SetRenderTarget(null);
