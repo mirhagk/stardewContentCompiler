@@ -51,26 +51,26 @@ namespace ContentCompiler
         }
         void DecompileSchedules()
         {
-            foreach (var asset in GetGameAssetsIn<Dictionary<string, string>>("characters\\schedules"))
-                OutputToFile("characters\\schedules", asset.Filename, Schedule.Decompile(asset));
+			foreach (var asset in GetGameAssetsIn<Dictionary<string, string>>(Path.Combine("Characters", "Schedules")))
+				OutputToFile(Path.Combine("Characters", "Schedules"), asset.Filename, Schedule.Decompile(asset));
         }
         void DecompileQuests()
         {
-            var quests = Quest.Decompile(Content.Load<Dictionary<int, string>>("Data\\Quests"));
+			var quests = Quest.Decompile(Content.Load<Dictionary<int, string>>(Path.Combine("Data", "Quests")));
             OutputToFile("Data", "Quests", quests);
         }
 
-        void DecompileDialogue() => DecompileToJson("characters\\dialogue");
-        void DecompileTV() => DecompileToJson("data\\tv");
-        void DecompileFestivals() => DecompileToJson("data\\Festivals");
-        void DecompileEvents() => DecompileToJson("data\\Events");
+		void DecompileDialogue() => DecompileToJson(Path.Combine("characters", "dialogue"));
+		void DecompileTV() => DecompileToJson(Path.Combine("data", "tv"));
+		void DecompileFestivals() => DecompileToJson(Path.Combine("data", "Festivals"));
+		void DecompileEvents() => DecompileToJson(Path.Combine("data", "Events"));
         void DecompilePortraits() => DecompileTextureFolder("portraits");
-        void DecompileMonsters() => DecompileTextureFolder("characters\\monsters");
-        void DecompileFarmer() => DecompileTextureFolder("characters\\farmer");
+		void DecompileMonsters() => DecompileTextureFolder(Path.Combine("characters", "monsters"));
+		void DecompileFarmer() => DecompileTextureFolder(Path.Combine("characters", "farmer"));
         void DecompileAnimals() => DecompileTextureFolder("animals");
         void DecompileBuildings() => DecompileTextureFolder("buildings");
         void DecompileLooseSprites() => DecompileTextureFolder("loosesprites");
-        void DecompileLighting() => DecompileTextureFolder("loosesprites\\lighting");
+		void DecompileLighting() => DecompileTextureFolder(Path.Combine("loosesprites", "lighting"));
         void DecompileMines() => DecompileTextureFolder("mines");
         void DecompileMinigames() => DecompileTextureFolder("minigames");
         void DecompileTerrainFeatures() => DecompileTextureFolder("TerrainFeatures");
