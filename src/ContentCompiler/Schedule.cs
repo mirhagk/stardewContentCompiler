@@ -47,7 +47,7 @@ namespace ContentCompiler
                         Location = pieces[1],
                         X = int.Parse(pieces[2]),
                         Y = int.Parse(pieces[3]),
-                        Direction = pieces[4].GetInt() ?? 2,
+						Direction = pieces?.ElementAtOrDefault(4).GetInt() ?? 2,
                     });
                 }
                 Console.WriteLine(keyPair.Key);

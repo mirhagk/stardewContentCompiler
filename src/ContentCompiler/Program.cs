@@ -18,13 +18,15 @@ namespace ContentCompiler
             public bool Decompile { get; set; }
             [PowerCommandParser.Position(0)]
             public string ContentRoot { get; set; } = @"C:\Program Files(x86)\steam\steamapps\common\Stardew Valley\Content";
+
+			public string OutputPath { get; set; } = Path.Combine(Directory.GetCurrentDirectory(), "output");
         }
         static void Main(string[] rawArgs)
         {
             var args = PowerCommandParser.Parser.ParseArguments<Arguments>(rawArgs);
             if (args.Decompile)
             {
-                Decompile(args.ContentRoot);
+				Decompile(args.ContentRoot, args.OutputPath);
             }
         }
         static Tuple<ContentManager,GameServiceContainer> SetupContentManager(string root)
@@ -38,11 +40,11 @@ namespace ContentCompiler
             return Tuple.Create(content, serviceContainer);
         }
 
-        static void Decompile(string root)
+        static void Decompile(string root, string outputPath)
         {
             var content = SetupContentManager(root);
 
-            var decompiler = new Decompiler(content.Item1, content.Item2);
+			var decompiler = new Decompiler(content.Item1, content.Item2, outputPath);
             decompiler.Decompile();
             content.Item1.Dispose();
             content.Item2.GetService<GraphicsDevice>().Dispose();
